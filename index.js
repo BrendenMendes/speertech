@@ -50,18 +50,18 @@ rsmq.listQueues(function (err, queues) {
 	console.log("Active queues: " + queues.join( "," ) )
 });
 
-// if (cluster.isMaster) {
-// 	var cpuCount = require('os').cpus().length;
-// 	console.log(cpuCount)
-// 	for (var i = 0; i < cpuCount; i += 1) {
-//         cluster.fork();
-//     }
-//     cluster.on('exit', function (worker) {
-// 		console.log('Worker %d died', worker.id);
-// 	    cluster.fork();
-// 	});
-// } 
-// else{
+if (cluster.isMaster) {
+	var cpuCount = require('os').cpus().length;
+	console.log(cpuCount)
+	for (var i = 0; i < cpuCount; i += 1) {
+        cluster.fork();
+    }
+    cluster.on('exit', function (worker) {
+		console.log('Worker %d died', worker.id);
+	    cluster.fork();
+	});
+} 
+else{
 	const app = express();
 
 	app.use(bodyParser.json());
@@ -90,7 +90,7 @@ rsmq.listQueues(function (err, queues) {
   		console.log("Attemting connection to DB")
   		dbOps.connectDB(dbURL)
     });
-// }
+}
 
 async function loadPassword(username, password){
 	let hashPassword = await dbOps.findDocuments(dbURL, 'users', {username}).catch(error => console.log(err));
